@@ -1,54 +1,55 @@
-# Statistica Computazionale — Homework
+# Computational Statistics — Homework
 
-Codice R dei due homework del corso di Statistica Computazionale (Laurea Magistrale).
+R code for the two homework assignments of the Computational Statistics course
+(MSc).
 
-| Cartella | Contenuto |
+| Folder | Content |
 |---|---|
-| [`Homework1/`](Homework1) | Metodi Monte Carlo: mistura Poisson/Gamma, Accept-Reject, Importance Sampling |
-| [`Homework2/`](Homework2) | Metodi MCMC: modello spaziale gerarchico, mistura di Poisson con variabile latente |
+| [`Homework1/`](Homework1) | Monte Carlo methods: Poisson/Gamma mixture, Accept-Reject, Importance Sampling |
+| [`Homework2/`](Homework2) | MCMC methods: hierarchical spatial model, Poisson mixture with latent variable |
 
-## Struttura
+## Layout
 
 ```
 Homework1/
-  esercizio1.R        mistura Poisson/Gamma: CDF, probabilita', quantili, parti discreta e continua
-  esercizio2.R        logistic-normal: Accept-Reject, a-posteriori di mu, Importance Sampling
-  report/main.tex     relazione, con le figure in report/Immagini
+  exercise1.R         Poisson/Gamma mixture: CDF, probabilities, quantiles, discrete and continuous parts
+  exercise2.R         logistic-normal: Accept-Reject, posterior of mu, Importance Sampling
+  report/main.tex     report, with the figures in report/images
 Homework2/
-  esercizio1.R        processo gaussiano spaziale: Gibbs + Metropolis adattivo, predizione spaziale
-  esercizio2.R        mistura di Poisson a 3 componenti: Gibbs sampler con variabile latente
-  report/main.tex     relazione, con le figure in report/images
+  exercise1.R         spatial Gaussian process: Gibbs + adaptive Metropolis, spatial prediction
+  exercise2.R         three-component Poisson mixture: Gibbs sampler with latent variable
+  report/main.tex     report, with the figures in report/images
 ```
 
-Le relazioni si compilano dalla cartella `report` corrispondente:
+## Running the code
+
+Each script is self-contained and is run from its own folder:
+
+```bash
+Rscript Homework1/exercise1.R
+```
+
+The seed is fixed at the top of every script (`set.seed(343240)`), so the results
+are reproducible.
+
+The reports are compiled from the corresponding `report` folder:
 
 ```bash
 cd Homework1/report && pdflatex main.tex && pdflatex main.tex
 ```
 
-La seconda passata serve a risolvere l'indice.
+The second pass is needed to resolve the table of contents.
 
-## Esecuzione
+## Required packages
 
-Ogni script e' indipendente e si esegue dalla propria cartella:
-
-```bash
-Rscript Homework1/esercizio1.R
-```
-
-Il seed e' fissato all'inizio di ogni script (`set.seed(343240)`), quindi i risultati
-sono riproducibili.
-
-## Pacchetti richiesti
-
-- Homework 1: nessuno (solo funzioni di base)
+- Homework 1: none (base R only)
 - Homework 2: `MASS`, `mvtnorm`, `coda`, `gtools`, `ggplot2`, `tidyr`
 
 ```r
 install.packages(c("MASS", "mvtnorm", "coda", "gtools", "ggplot2", "tidyr"))
 ```
 
-## Note
+## Notes
 
-Lo script `Homework2/esercizio1.R` esegue 60000 iterazioni MCMC (burn-in 20000) e
-richiede qualche minuto.
+`Homework2/exercise1.R` runs 60000 MCMC iterations (burn-in 20000) and takes a
+few minutes.

@@ -1,55 +1,58 @@
-# Homework 1 — Metodi Monte Carlo
+# Homework 1 — Monte Carlo methods
 
-## `esercizio1.R`
+## `exercise1.R`
 
-Modello mistura con variabile latente:
+Mixture model with a latent variable:
 
 ```
 Z ~ Bern(p),   Y|Z = 0 ~ Poisson(lambda),   Y|Z = 1 ~ Gamma(a, b)
 ```
 
-con `a ~ U(2.5, 5.5)`, `lambda ~ U(2, 4)`, `b = 1`, `p = 0.5`, `n = 1000`.
+with `a ~ U(2.5, 5.5)`, `lambda ~ U(2, 4)`, `b = 1`, `p = 0.5`, `n = 1000`.
 
-Punti svolti:
+Points covered:
 
-1. simulazione dei campioni dalla marginale di `Y` e stima Monte Carlo della CDF
-   (`F(t) = E[I{Y <= t}]`);
-2. stima di `P(Y in [3.5, 4.5])` e `P(Y in [3.5, 4.5] | Z = 0)`, con la varianza
-   dei due stimatori;
-3. `P(Z = 0 | Y in [1.5, 3.5])` e `P(Z = 1 | Y in [1.5, 3.5])` via teorema di Bayes;
-4. quantili empirici di `Y` e `Z` ai livelli 0.1, 0.2, 0.5, 0.75 tramite
-   l'inversa generalizzata `F^-1(u) = inf{x : u <= F(x)}`;
-5. stima della parte discreta (`Z = 0`) e della parte continua (`Z = 1`) di `Y`
-   sui punti `seq(0, 10, 0.25)`, con confronto rispetto alle densita' teoriche.
+1. simulation of the samples from the marginal of `Y` and Monte Carlo estimate of
+   the CDF (`F(t) = E[I{Y <= t}]`);
+2. estimation of `P(Y in [3.5, 4.5])` and `P(Y in [3.5, 4.5] | Z = 0)`, together
+   with the variance of the two estimators;
+3. `P(Z = 0 | Y in [1.5, 3.5])` and `P(Z = 1 | Y in [1.5, 3.5])` through Bayes'
+   theorem;
+4. empirical quantiles of `Y` and `Z` at levels 0.1, 0.2, 0.5, 0.75 through the
+   generalised inverse `F^-1(u) = inf{x : u <= F(x)}`;
+5. estimation of the discrete part (`Z = 0`) and of the continuous part (`Z = 1`)
+   of `Y` on the grid `seq(0, 10, 0.25)`, compared against the theoretical
+   densities.
 
-## `esercizio2.R`
+## `exercise2.R`
 
-Distribuzione **logistic-normal** su `[0, 1]`:
+**Logistic-normal** distribution on `[0, 1]`:
 
 ```
 f(x | mu, sigma2) = 1/(x(1-x)) * 1/sqrt(2 pi sigma2) * exp(-(logit(x) - mu)^2 / (2 sigma2))
 ```
 
-con `mu ~ U(-1.5, 1.5)` e `sigma2 ~ U(0.5, 1.5)`.
+with `mu ~ U(-1.5, 1.5)` and `sigma2 ~ U(0.5, 1.5)`.
 
-Punti svolti:
+Points covered:
 
-1. simulazione dei dati con il metodo **Accept-Reject** (proposta uniforme sul
-   rettangolo `[0,1] x [0,M]`, con `M` massimo della densita');
-2. derivazione della a-posteriori di `mu` con prior `mu ~ N(0, 100)` e `sigma2` noto.
-   Il kernel risulta gaussiano:
+1. data simulation through the **Accept-Reject** method (uniform proposal on the
+   rectangle `[0,1] x [0,M]`, where `M` is the maximum of the density);
+2. derivation of the posterior of `mu` under the prior `mu ~ N(0, 100)` with
+   `sigma2` known. The kernel turns out to be Gaussian:
 
    ```
    pi(mu | x) ~ N( sum(logit(x_i)) / (n + sigma2/100),  sigma2 / (n + sigma2/100) )
    ```
 
-   quindi il campionamento e' diretto;
-3. confronto tra prior e posterior al crescere delle osservazioni (10 vs 100);
-4. stima di `E(X)` con **Importance Sampling** usando come densita' strumentale
-   una `Beta(1.2, 1.2)`.
+   so sampling is direct;
+3. comparison between prior and posterior as the number of observations grows
+   (10 vs 100);
+4. estimation of `E(X)` through **Importance Sampling**, using a `Beta(1.2, 1.2)`
+   as the instrumental density.
 
 ## `report/`
 
-Relazione in LaTeX (`main.tex`) con le figure prodotte dagli script, in
-`report/Immagini`. Riporta la derivazione della a-posteriori di `mu` e i
-risultati numerici commentati.
+LaTeX report (`main.tex`) together with the figures produced by the scripts, in
+`report/images`. It contains the derivation of the posterior of `mu` and the
+commented numerical results.
