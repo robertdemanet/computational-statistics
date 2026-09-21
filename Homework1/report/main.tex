@@ -1,0 +1,267 @@
+\documentclass[a4paper,12pt]{article}
+
+% Pacchetti utili
+\usepackage[utf8]{inputenc}  % Codifica di input
+\usepackage[T1]{fontenc}     % Codifica dei font
+\usepackage[italian]{babel}  % Lingua italiana
+\usepackage{graphicx}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\newtheorem{theorem}{Teorema}[section]
+\newtheorem{definition}{Definizione}[section]
+\usepackage{amssymb}
+
+% Informazioni sul titolo
+\title{HomeWork 1, Statistica Computazionale}
+\author{Alessio Manetti}
+\date{\today}  % Data di compilazione automatica
+
+
+
+\begin{document}
+
+% Titolo e frontespizio
+\maketitle
+\tableofcontents  % Genera automaticamente l'indice
+
+\newpage
+
+\section{Esercizio 1}
+Simuliamo i parametri
+\[a \sim U(2.5,5.5), \ \lambda \sim U(2,4)\]
+ottenendo i valori
+\[a = 4.706901, \ \lambda = 3.049805.\]
+Definiamo i restanti parametri
+\[b = 1, \ p = 0.5.\]
+Abbiamo una variabile aleatoria \(Z \in \{0,1\}\) che segue una distribuzione
+\[Z \sim Bern(p)\]
+e, condizionatamente a \(Z\), abbiamo una variabile aleatoria \(Y\) che segue la seguente distribuzione
+\[Y|Z=0 \sim P(\lambda) \ \ \ \ Y|Z=1 \sim G(a,b).\]
+
+\subsection{Campioni dalla marginale di \(Y\) e stima MC della CDF}
+Per simulare campioni dalla marginale di \(Y\), simuliamo un vettore \(z\) di \(n = 1000\) campioni da \(Z\) e creiamo un vettore vuoto \textit{y\_sample}, da riempire successivamente con le osservazioni di \(Y\), un secondo vettore vuoto \textit{y\_sample\_z0}, da riempire con le osservazioni di \(Y|Z=0\), e un terzo vettore vuoto \textit{y\_sample\_z1}, da riempire con le osservazioni di \(Y|Z=1\), tutti con stessa lunghezza \(n\). \\
+Iterando sul numero di campioni di \(Z\):
+\begin{enumerate}
+    \item se il generico campione di indice \(i\) di \(Z\) ha valore \(0\), allora i vettori \textit{y\_sample} e \textit{y\_sample\_z0} vengono riempiti all'indice \(i\) con un campione da \(Y|Z=0 \sim P(\lambda)\), mentre il vettore \textit{y\_sample\_z1} viene riempito all'indice \(i\) con valore \(-1\);
+    \item se il generico campione di indice \(i\) di \(Z\) ha valore \(1\), allora i vettori \textit{y\_sample} e \textit{y\_sample\_z1} vengono riempiti all'indice \(i\) con un campione da \(Y|Z=1 \sim G(a,b)\), mentre il vettore \textit{y\_sample\_z0} viene riempito all'indice \(i\) con valore \(-1\).
+\end{enumerate}
+In questo modo avremo su \textit{y\_sample} i campioni da \(Y\), su \textit{y\_sample\_z0} i campioni da \(Y|Z = 0\) e su \textit{y\_sample\_z1} i campioni da \(Y|Z=1\). \\
+Per il calcolo della CDF di \(Y\) creiamo un vettore \textit{yseq} di \(n\) elementi equispaziati tra il minimo valore di \textit{y\_sample} e il massimo valore di \textit{y\_sample}, e un vettore vuoto \(cdf\) di lunghezza \(n\): tale vettore verrà riempito con i valori assunti dalla CDF. \\
+La CDF per una variabile aleatoria può essere scritta come
+\[ F(a) = \int_{-\infty}^{a} f(x) \ d\lambda(x) = \int_{-\infty}^{\infty} \mathbb{I}\{ x \leq a\} f(x) \ d\lambda(x) = E\left( \mathbb{I}\{ x \leq a\} \right) \approx \frac{\sum_{i=1}^{n} \mathbb{I}\{ x \leq X_i \}}{n}\]
+dove gli \(X_i, \ i = 1,...,n,\) sono, nel nostro caso, gli elementi di \textit{yseq}. \\
+Usando tale metodo si ottengono i seguenti risultati:
+\begin{center}
+    \includegraphics[width = 1\textwidth]{Immagini/Rplot05.png}
+\end{center}
+dove la funzione blu rappresenta la stima MC della nostra CDF. 
+
+\subsection{Stima MC di probabilità e varianza dello stimatore}
+ Si richiede di calcolare  \( f(Y \in [3.5,4.5]) \) e \(f(Y \in [3.5,4.5]|Z = 0)\). \\
+ Per fare ciò utilizziamo nuovamente l'approssimazione MC, che ci dice che:
+ \[f(Y \in [3.5,4.5]) \approx \frac{\sum_{i=1}^{n} \mathbb{I}\{ y_i \in [3.5,4.5] \}}{n}\]
+ e
+ \[f(Y \in [3.5,4.5]|Z=0) \approx \frac{\sum_{i=1}^{n^*} \mathbb{I}\{ y_i \in [3.5,4.5]|z = 0 \}}{n^*} = \frac{\sum_{i=1}^{n^*} \mathbb{I}\{ y\_z0_i \in [3.5,4.5]\}}{n^*}\]
+ dove \(y_i\) è il generico elemento di \textit{y\_sample}, \(y\_z0_i\) è il generico elemento di \textit{y\_sample\_z0} e \(n^*\) è il numero di osservazioni da \(Y|Z = 0\). \\
+ Utilizzando tale approssimazione, si ottengono i seguenti risultati:
+ \[f(Y \in [3.5,4.5]) \approx 0.186\]
+ e 
+ \[f(Y \in [3.5,4.5]|Z=0) \approx 0.1897959.\]
+Ora, la varianza del primo stimatore può essere scritta come
+\[ v_{n\_y} = var(\Bar{h}_n) = var\left( \frac{\sum_{i=1}^{n} \mathbb{I}\{ y_i \in [3.5,4.5] \}}{n} \right)\]
+che può essere approssimata come
+\[v_{n\_y} \approx \frac{1}{n^2} \sum_{i = 1}^{n} \left( \mathbb{I}\{ y_i \in [3.5,4.5] \} - \Bar{h}_n \right)^2.\]
+Analogamente, per il secondo stimatore,
+\[ v_{n\_yz0} \approx \frac{1}{(n^*)^2} \sum_{i = 1}^{n^*} \left( \mathbb{I}\{ y\_z0_i \in [3.5,4.5] \} - \Bar{h}_{n^*} \right)^2.\]
+Utilizzando tali approssimazioni, otteniamo i seguenti risultati:
+\[ v_{n\_y} \approx 0.000151404\]
+e 
+\[ v_{n\_yz0} \approx 0.0003903392.\]
+
+\subsection{ Stima MC di probabilità}
+Si richiede di calcolare \( f(Z = 0|Y \in [1.5,3.5]) \) e \(f(Z = 1|Y \in [1.5,3.5]) \). \\
+Per rispondere alla richiesta, sfruttiamo il seguente:
+\begin{theorem}[di Bayes]
+    Date due variabili aleatorie \(X\) e \(Y\), allora
+    \[f(x|y) = \frac{f(x,y)}{f(y} = \frac{f(y|x)f(x)}{f(y)}\]
+    dove \(f(y) = \int f(y,x) \ d\lambda(x)\).
+\end{theorem}
+Dal risultato deduciamo che
+\[f(Z=0|Y \in [1.5,3.5]) = \frac{f(Y \in [1.5,3.5]|Z=0) f(Z=0)}{f(Y \in [1.5,3.5])}\]
+e 
+\[f(Z=1|Y \in [1.5,3.5]) = \frac{f(Y \in [1.5,3.5]|Z=1) f(Z=1)}{f(Y \in [1.5,3.5])}.\]
+Tutti i fattori sulla destra sono facilmente stimabili utilizzando quanto detto nel punto precedente, quindi otteniamo i seguenti risultati:
+\[f(Z=0|Y \in [1.5,3.5]) = 0.5645161\]
+e
+\[f(Z=1|Y \in [1.5,3.5]) = 0.4354839.\]
+
+\subsection{Stima dei quantili empirici usando l'Inversa Generalizzata}
+Innanzitutto, diamo la seguente:
+\begin{definition}[Inversa Generalizzata o Funzione Quantilica]
+    Per una funzione non decrescente F su \(\mathbb{R}\), l'inversa generalizzata di \(F\), indicata con \(F^{-1}\), è definita come 
+    \[F^{-1}(u) = inf\{x: u \leq F(x)\]
+\end{definition}
+Nel nostro caso, la \(F\) è la CDF calcolata precedentemente. \\
+La richiesta è quella di calcolare i quantili empirici a livello \(0.1,0.2,0.5,0.75\) di \(Y\) e \(Z\), ossia 
+\[ F^{-1}(0.1), \ F^{-1}(0.2),\ F^{-1}(0.5), \ F^{-1}(0.75)\]
+dove \(F\) è prima la CDF per Y, poi la CDF per Z. \\
+Per il primo caso, per ciascun quantile empirico di livello \(u\), salviamo l'indice \(i\) del primo valore del vettore \textit{cdf} per il quale si verifica la condizione
+\[u \leq cdf[i]. \]
+Il quantile empirico cercato sarà allora il valore associato all'\(i\)-esimo indice del vettore \textit{yseq}. \\
+Analogamente si svolge il secondo caso per \(Z\), con la differenza che la CDF viene calcolata manualmente, e ha la seguente forma:
+\begin{center}
+    \includegraphics[width = 1\textwidth]{Immagini/Rplot06.png}
+\end{center}
+Otteniamo i seguenti risultati:
+\begin{itemize}
+    \item per la distribuzione \(Y\): 
+    \begin{center}
+        \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        \textbf{Percentili} & 0.1 & 0.2 & 0.5 & 0.75 \\ \hline
+        \textbf{Valori}     & 1.303101   & 2.000721   &  3.764515  & 5.001803   \\ \hline
+    \end{tabular}
+    \end{center}
+    \item per la distribuzione \(Z\): 
+    \begin{center}
+        \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        \textbf{Percentili} & 0.1 & 0.2 & 0.5 & 0.75 \\ \hline
+        \textbf{Valori}     & 0   & 0   & 1  & 1   \\ \hline
+    \end{tabular}
+    \end{center}
+\end{itemize}
+
+
+\subsection{Stima MC delle parti discreta e continua di Y}
+Sappiamo dalla consegna che
+\[Y|Z=0 \sim P(\lambda) \ \ \ \ Y|Z=1 \sim G(a,b)\]
+quindi la parte discreta di \(Y\) è costituita dalla parte condizionata all'evento \(Z=0\), infatti la distribuzione di \textit{Poisson} è una distribuzione a valori discreti, mentre la parte continua di \(Y\) è costituita dalla parte condizionata all'evento \(Z = 1\), infatti la distribuzione \textit{Gamma} è una distribuzione a valori continui. \\
+Per stimare i valori delle due parti, utilizziamo i vettori calcolati in precedenza \textit{y\_sample\_z0} e \textit{y\_sample\_z1}, creiamo due vettori vuoti \textit{stima\_y\_z0} e \textit{stima\_y\_z1}, entrambi di lunghezza \(n = 41\), e un vettore 
+\[x = (0,0.25,0.5,0.75,1,1.25,...,8.75,9,9.25,9.5,9.75,10)\]
+che rappresenta i valori su cui stimiamo le due parti. \\
+Siano \(y\_z0_i\) e \(y\_z1_i\) i generici elementi di \(y\_sample\_z0\) e \(y\_sample\_z1\) rispettivamente e \(j = 4i\),  iteriamo sui valori \(x_i\) di \textit{x}, e, per ciascun \(x_i\), calcoliamo la parte discreta come 
+\[stima\_y\_z0[j + 1] =  \frac{\sum_{k = 1}^{n_1} \mathbb{I}\{ y\_z0_k = x_i \} }{n_1} \]
+e la parte continua come
+\[stima\_y\_z1[j + 1] =  \frac{\sum_{k = 1}^{n_2} \mathbb{I}\{ y\_z1_k \in  (x_i - tol,x_i + tol)  \} }{n_2} \]
+dove \(n_1\) e \(n_2\) sono il numero di osservazioni condizionate a \(Z=0\) e \(Z=1\) rispettivamente, e \(tol = 0.5\) è una tolleranza che è necessario utilizzare in quanto, nella simulazione di una distribuzione continua, è improbabile che le osservazioni corrispondano esattamente ai valori discreti di un insieme finito. \\
+Otteniamo i seguenti risultati:
+\begin{center}
+    \includegraphics[width=1\linewidth]{Immagini/Rplot07.png}
+    \includegraphics[width=1\linewidth]{Immagini/Rplot08.png}
+\end{center}
+dove le funzioni blu e rossa sono le densità empiriche, mentre in verde abbiamo le densità reali che le densità empiriche dovrebbero simulare.
+
+
+
+
+
+
+
+
+\newpage
+
+
+\section{Esercizio 2}
+Simuliamo i parametri 
+\[\mu \sim U(-1.5,1.5), \ \sigma^2 \sim U(0.5,0.5)\]
+ottenendo i valori 
+\[ \mu = 0.706901281373575,\ \sigma^2 = 1.02490245504305.\]
+Abbiamo una variabile aleatoria \(X \in [0,1]\) che segue una distribuzione \textit{logistic-normal}, che ha densità
+\[ f(x|\mu,\sigma^2) = \frac{1}{x(1-x)} \frac{1}{\sqrt{2\pi\sigma^2}} \exp \left(-\frac{(logit(x)-\mu)^2}{2\sigma^2} \right)\]
+dove
+\[logit(x) = \log \left( \frac{x}{1-x}\right).\]
+
+
+\subsection{Simulazione dati con metodo Accept-Reject}
+
+
+Per simulare un set di \(n = 10\) dati dalla \textit{logistic-normal} simuliamo un numero molto maggiore di campioni, nel nostro caso \(n^* = 1000\), da una variabile aleatoria \(U \sim U(0,M)\), dove \(M = 1.972316\) è il valore massimo assunto dalla densità in esame sul suo dominio, i cui dati generati sono i campioni della densità che dovremo scegliere se accettare o meno. \\ Simuliamo poi \(n^*\) campioni da una variabile aleatoria \(Y \sim U(0,1)\), che rappresentano le ascisse corrispondenti ai campioni generati in precedenza da \(U\), e in un vettore \(X\) salviamo esclusivamente i campioni generati da \(Y\), i cui indici corrispondono agli indici dei campioni generati da \(U\) che soddisfano, detto \(u\) il generico campione generato da \(U\) e \(x^*\) il generico campione generato da \(Y\), la condizione \(u < f(x^*|\mu,\sigma^2)\). \\
+Analogamente, in un vettore \(U\_X\) salviamo i campioni generati da \(U\) che soddisfano la condizione \(u < f(x^*|\mu,\sigma^2)\). \\
+Avremo quindi salvato nel vettore \(U\) gli \(n^*\) campioni della simulazione della funzione di densità, con le corrispondenti ascisse di tali campioni in \(Y\), mentre i campioni accettati, che descrivono correttamente la funzione di densità \textit{logistic-normal}, sono contenuti in \(U\_X\), mentre le corrispondenti ascisse in \(X\). \\
+La percentuale di accettazione del metodo \textit{accept-reject} in questo caso si attesta a 
+\[perc\_acceptance = 0.51.\]
+Il supporto teorico a tali operazioni è fornito dal seguente:
+
+\begin{theorem}
+    Simulare \(X \sim f(x)\), dove \(X\) è definita in un dominio arbitrario, è equivalente a simulare 
+    \[(X,U) \sim U{(x,u): 0 < u < f(x)}\]
+    i.e. \((X,U)\) è uniforme in \({(x,u): 0 < u < f(x)}\).
+\end{theorem}
+
+Dato che la richiesta è di selezionare \(n = 10\) dati, selezioniamo soltanto i primi 10 elementi di ciascun vettore, ottenendo i seguenti risultati:
+\begin{center}
+    \includegraphics[width=1\textwidth]{Immagini/Rplot.png}
+\end{center}
+dove la funzione in blu è la densità della \textit{logistic-normal}, i punti neri i campioni non accettati, i punti rossi i campioni accettati e la funzione in verde la densità empirica dei campioni accettati. \\
+Dato il ristretto numero di campioni accettati \(n = 10\) la funzione di densità empirica non descrive correttamente la funzione di densità della \textit{logistic-normal}, infatti, per ottenere una funzione di densità empirica più accurata, sarebbe necessario aumentare il numero di campioni accettati.
+
+
+
+
+
+
+
+\subsection{Derivazione della a-posteriori e campionamento diretto}
+Deriviamo la a-posteriori  a partire da una prior \( \mu \sim N(0,100)\) e \(\sigma^2\) noto pari al valore usato nel punto precedente. \\
+Applichiamo il seguente:
+\begin{theorem}[di Bayes]
+    Dato un parametro \(\theta\) e un insieme finito di osservazioni \((x_1,...,x_n)\), si ottiene
+    \[ \pi(\theta|x_1,...,x_n) = \frac{\pi(\theta)L(\theta|x_1,...,x_n)}{f(x_1,...,x_n)}\]
+    dove \(f(x_1,...,x_n)\) è la distribuzione marginale dei dati, \(\pi(\theta|x_1,...,x_n)\) è la distribuzione a posteriori di \(\theta\), \(\pi(\theta)\) la distribuzione a priori di \(\theta\) e \(L(\theta|x_1,...,x_n)\) la verosimiglianza del parametro \(\theta\) rispetto alle osservazioni \((x_1,...,x_n)\).
+\end{theorem}
+Poiché \(\pi(\theta|x_1,...,x_n)\) è funzione di \(\theta\), si deduce che
+\[\pi(\theta|x_1,...,x_n) \propto \pi(\theta)L(\theta|x_1,...,x_n).\]
+Nel nostro caso, il parametro \(\theta\) corrisponde a \(\mu \sim N(0,100)\), per cui:
+\begin{align*}
+    \pi(\mu|x_1,...,x_n) &\propto L(\mu|x_1,...,x_n)\pi(\mu) \\
+    &= \left(\prod_{i=1}^{n} \frac{1}{x_i(1-x_i)} \frac{1}{\sqrt{2\pi\sigma^2}} \exp \left(-\frac{(logit(x_i)-\mu)^2}{2\sigma^2} \right) \right) \left( \frac{1}{\sqrt{200 \pi}} \exp\left(-\frac{\mu^2}{200} \right) \right)  \\
+    &\propto \left(\prod_{i=1}^{n} \exp \left(-\frac{(logit(x_i)-\mu)^2}{2\sigma^2} \right)  \right) \exp\left(-\frac{\mu^2}{200} \right) \\
+    &= \exp \left( -\frac{1}{2\sigma^2}\sum_{i=1}^{n} (logit(x_i)^2 - 2\mu  logit(x_i) + \mu^2) \right) \exp\left(-\frac{\mu^2}{200} \right) \\
+    &\propto \exp \left( - \frac{1}{2\sigma^2} \left( n\mu^2 - 2\mu \sum_{i=1}^{n} logit(x_i) + \frac{\sigma^2 \mu^2}{100}\right) \right) \\
+    &= \exp \left( - \frac{1}{2\sigma^2} \left( \mu^2\left( n + \frac{\sigma^2}{100} \right)- 2\mu \sum_{i=1}^{n} logit(x_i)\right) \right) \\
+    &\propto \exp \left( - \frac{1}{2} \frac{\left(n + \frac{\sigma^2}{100} \right)}{\sigma^2} \left( \mu^2- \frac{2\mu \sum_{i=1}^{n} logit(x_i)}{\left(n + \frac{\sigma^2}{100} \right)} + \left( \frac{(\sum_{i=1}^{n} logit(x_i))^2}{\left(n + \frac{\sigma^2}{100} \right)^2} \right)\right) \right) \\
+    &= \exp \left(- \frac{1}{2} \frac{\left( \mu - \frac{\sum_{i=1}^{n} logit(x_i)}{n+\frac{\sigma^2}{100}} \right)^2}{\frac{\sigma^2}{n + \frac{\sigma^2}{100}}} \right)
+\end{align*}
+
+che è il \textit{kernel} di una distribuzione \(N\left( \frac{\sum_{i=1}^{n} logit(x_i)}{n+\frac{\sigma^2}{100}},  \frac{\sigma^2}{n + \frac{\sigma^2}{100}}\right)\), da cui deduciamo che:
+\[\pi(\mu|x_1,...,x_n) \sim N\left( \frac{\sum_{i=1}^{n} logit(x_i)}{n+\frac{\sigma^2}{100}},  \frac{\sigma^2}{n + \frac{\sigma^2}{100}}\right).\]
+Abbiamo quindi ottenuto che la a-posteriori è distribuita secondo una distribuzione nota, ossia una \textit{normale}, da cui è quindi possibile campionare direttamente. \\
+Per rappresentare graficamente la a-posteriori considero le ascisse dei campioni accettati dalla \textit{logistic-normal} contenuti in \textit{X}. I risultati ottenuti sono rappresentati dal seguente istogramma:
+\begin{center}
+    \includegraphics[width=1\textwidth]{Immagini/Rplot01.png}
+\end{center}
+dove sulle ascisse troviamo i valori assunti dalla a-posteriori e sulle ordinate la frequenza con la quale questi vengono assunti. La linea rossa rappresenta la densità empirica di tali valori.
+
+\subsection{Confronto tra \textit{prior} e \textit{posterior}}
+Utilizzando il metodo spiegato in precedenza, selezioniamo i primi \(n_2 = 100\) elementi da ciascun vettore utilizzato nel campionamento \textit{accept-reject}, così da ottenere una simulazione di \(n_2 = 100\) campioni dalla \textit{logistic-normal}. Li mettiamo a confronto con \(n_1 = 10\) campioni calcolati precedentemente, ottenendo i seguenti risultati:
+\begin{center}
+    \includegraphics[width=1\textwidth]{Immagini/Rplot02.png}
+\end{center}
+ossia una simulazione più accurata sulla destra, utilizzando \(n_2 = 100\) campioni. \\
+Ora, sia degli \(n_1 = 10\) che degli \(n_2 = 100\) campioni accettati \(u\_x_1\) e \(u\_x_2\) ne selezioniamo le ascisse, contenute nei vettori \textit{X10\_sample} e \textit{X100\_sample}, e utilizziamo questi valori per simulare dalla a-posteriori, ottenendo i seguenti risultati:
+\begin{center}
+    \includegraphics[width=1\textwidth]{Immagini/Rplot03.png}
+\end{center}
+dove sulla sinistra abbiamo la distribuzione a-priori del parametro \(\mu\), al centro la distribuzione a-posteriori utilizzando come osservazioni il set di \(n_1 = 10\) campioni, sulla destra la distribuzione a-posteriori utilizzando come osservazioni il set di \(n_2 = 100\) campioni, mentre la linea verticale rossa rappresenta il valore effettivo del parametro \(\mu\). \\
+Come ci si aspettava dalle premesse teoriche, la distribuzione a-posteriori condizionata alle \(n_1 = 10\) osservazioni risulta essere più \textit{larga} rispetto a quella condizionata alle \(n_2 = 100\) osservazioni, che risulta centrata sul valore effettivo del parametro \(\mu\). \\
+
+
+
+\subsection{Calcolo della media con metodo Importance-Sampling}
+Si richiede di calcolare
+\[E(X) = \int_{\mathcal{X}} x f(x) \ d\lambda(x)\]
+dove \(f(x)\) è la funzione di densità della distribuzione \textit{logistic-normal}.\\
+Detta \(g(x)\) la funzione di densità di una distribuzione \textit{beta} con parametri \(a = 1.2 \) e \(b = 1.2\), tale integrale può essere riscritto come
+\[E(X) = \int_{\mathbf{\mathcal{X}}} x f(x) \ d\lambda(x) = \int_{\mathcal{X}} \frac{x f(x)}{g(x)} g(x) \ d\lambda(x) = E_g\left(\frac{Xf(X)}{g(X)}\right).\]
+Se \(x_i,\ i = 1,...,n,\) sono campioni ottenuti dalla distribuzione \textit{beta} di funzione di densità \(g\), abbiamo che 
+\[E_g\left(\frac{Xf(X)}{g(X)}\right) \approx \frac{\sum_{i = 1}^{n}\frac{x_i f(x_i)}{g(x_i)}}{n}.\]
+Definiamo \(n = 1000\), campioniamo direttamente dalla \textit{beta}, ottenendo \(n = 1000\) osservazioni e utilizziamo l'approssimazione di cui sopra, ottenendo i seguenti risultati:
+\begin{center}
+    \includegraphics[width=1\textwidth]{Immagini/Rplot04.png}
+\end{center}
+dove la funzione in viola rappresenta la funzione di densità delle \textit{logistic-normal} e la linea rossa il valore atteso di tale funzione, calcolato con metodo Importance-Sampling. \\
+Il valore ottenuto dalla stima è:
+\[E(X) \approx 0.6373222\]. 
+
+\end{document}

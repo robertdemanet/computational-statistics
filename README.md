@@ -11,12 +11,22 @@ Codice R dei due homework del corso di Statistica Computazionale (Laurea Magistr
 
 ```
 Homework1/
-  esercizio1.R   mistura Poisson/Gamma: CDF, probabilita', quantili, parti discreta e continua
-  esercizio2.R   logistic-normal: Accept-Reject, a-posteriori di mu, Importance Sampling
+  esercizio1.R        mistura Poisson/Gamma: CDF, probabilita', quantili, parti discreta e continua
+  esercizio2.R        logistic-normal: Accept-Reject, a-posteriori di mu, Importance Sampling
+  report/main.tex     relazione, con le figure in report/Immagini
 Homework2/
-  esercizio1.R   processo gaussiano spaziale: Gibbs + Metropolis adattivo, predizione spaziale
-  esercizio2.R   mistura di Poisson a 3 componenti: Gibbs sampler con variabile latente
+  esercizio1.R        processo gaussiano spaziale: Gibbs + Metropolis adattivo, predizione spaziale
+  esercizio2.R        mistura di Poisson a 3 componenti: Gibbs sampler con variabile latente
+  report/main.tex     relazione, con le figure in report/images
 ```
+
+Le relazioni si compilano dalla cartella `report` corrispondente:
+
+```bash
+cd Homework1/report && pdflatex main.tex && pdflatex main.tex
+```
+
+La seconda passata serve a risolvere l'indice.
 
 ## Esecuzione
 

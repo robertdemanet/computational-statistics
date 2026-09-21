@@ -47,3 +47,9 @@ Punti svolti:
 3. confronto tra prior e posterior al crescere delle osservazioni (10 vs 100);
 4. stima di `E(X)` con **Importance Sampling** usando come densita' strumentale
    una `Beta(1.2, 1.2)`.
+
+## `report/`
+
+Relazione in LaTeX (`main.tex`) con le figure prodotte dagli script, in
+`report/Immagini`. Riporta la derivazione della a-posteriori di `mu` e i
+risultati numerici commentati.

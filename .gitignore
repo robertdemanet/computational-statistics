@@ -3,3 +3,12 @@
 .Rproj.user/
 Rplots.pdf
 *.Rproj
+
+# LaTeX
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk

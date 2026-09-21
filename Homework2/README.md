@@ -65,3 +65,9 @@ Punti svolti:
 
    L'aggiornamento di `z_i` e' normalizzato in scala logaritmica (log-sum-exp)
    per evitare underflow quando le `lambda` sono ben separate.
+
+## `report/`
+
+Relazione in LaTeX (`main.tex`) con le figure prodotte dagli script, in
+`report/images`. Riporta il DAG del modello spaziale, la derivazione delle full
+conditional e i risultati numerici commentati.
